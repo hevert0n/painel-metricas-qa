@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de QA - Apenas Visualização</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; padding: 20px; }
+        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; border-radius: 10px; }
+        .dash-card { text-align: center; padding: 12px; border-left: 5px solid #6c757d; height: 100%; }
+        .table-container { max-height: 450px; overflow-y: auto; }
+        th { font-size: 0.85rem; white-space: nowrap; }
+        td { font-size: 0.9rem; }
+        .score-badge { font-weight: bold; padding: 5px 10px; border-radius: 20px; display: inline-block; min-width: 45px; text-align: center; }
+        .chart-container { position: relative; height: 180px; width: 100%; }
+        .ticket-badge { background-color: #e9ecef; color: #495057; font-family: monospace; font-weight: bold; padding: 3px 6px; border-radius: 4px; border: 1px solid #ced4da; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid px-4">
+    
+    <div class="text-center my-3">
+        <h2>📊 Dashboard de Engenharia & Qualidade de QA</h2>
+        <p class="text-muted">Indicadores consolidados, evolução de scores e visão executiva por squad.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-8 col-lg-7">
+            <div class="row g-2 mb-2">
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #0d6efd;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Features</small>
+                        <h4 id="dashFeatures" class="mb-0 text-primary">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #198754;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs QA</small>
+                        <h4 id="dashBugsQa" class="mb-0 text-success">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #ffc107;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Retrabalhos</small>
+                        <h4 id="dashRetrabalhos" class="mb-0 text-warning">-</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2">
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #dc3545;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs Prod</small>
+                        <h4 id="dashBugsProd" class="mb-0 text-danger">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #6f42c1;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Escape Médio</small>
+                        <h4 id="dashEscape" class="mb-0" style="color: #6f42c1;">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" id="cardScoreGeral" style="border-left-color: #20c997;">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Score Médio</small>
+                        <h4 id="dashScore" class="mb-0">-</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-lg-2 col-md-6">
+            <div class="card p-2 bg-white text-center h-100">
+                <small class="fw-bold text-muted mb-1">Status do QA</small>
+                <div class="chart-container"><canvas id="chartStatus"></canvas></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-6">
+            <div class="card p-2 bg-white text-center h-100">
+                <small class="fw-bold text-muted mb-1">Evolução do Score</small>
+                <div class="chart-container"><canvas id="chartScoreTimeline"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 mb-4 bg-white">
+        <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-xl-3">
+                <h4 class="card-title mb-0">Features Monitorizadas</h4>
+            </div>
+            <div class="col-12 col-md-4 col-xl-4">
+                <input type="text" id="txtBusca" class="form-control form-control-sm" placeholder="🔍 Buscar por Feature ou Ticket..." onkeyup="filtrarTabelaECharts()">
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <select id="selectFiltroSquad" class="form-select form-select-sm" onchange="filtrarTabelaECharts()">
+                    <option value="Todos">Squad: Todas</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2 d-flex gap-1 align-items-center">
+                <input type="date" id="dataFiltroDe" class="form-control form-control-sm" title="Data Inicial" onchange="filtrarTabelaECharts()">
+                <small class="text-muted">à</small>
+                <input type="date" id="dataFiltroAte" class="form-control form-control-sm" title="Data Final" onchange="filtrarTabelaECharts()">
+            </div>
+            <div class="col-12 col-md-2 col-xl-1 text-end">
+                <button class="btn btn-sm btn-secondary w-100" onclick="carregarMetricas()">🔄</button>
+            </div>
+        </div>
+        
+        <div class="table-container table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Data Registo</th>
+                        <th>Squad</th>
+                        <th>Ticket</th>
+                        <th>Feature</th>
+                        <th>Bugs QA</th>
+                        <th>Retrabalho</th>
+                        <th>Reabertos</th>
+                        <th>Status</th>
+                        <th>Bugs Prod</th>
+                        <th>Taxa Escape</th>
+                        <th>TTF</th>
+                        <th>Data Deploy</th>
+                        <th>Data Bug Prod</th>
+                        <th>MTTF</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo">
+                    <tr>
+                        <td colspan="15" class="text-center text-muted">A carregar dados...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let myChartStatus = null;
+    let myChartTimeline = null;
+    
+    window.onload = function() {
+        carregarMetricas();
+    };
+
+    function formatarDataExibicao(textoIso) {
+        if (!textoIso) return "-";
+        let partes = textoIso.split("T");
+        let dataPartes = partes[0].split("-");
+        return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${partes[1]}`;
+    }
+
+    function atualizarDashboardECharts(dadosFiltrados) {
+        let totalFeatures = dadosFiltrados.length;
+        let totalBugsQa = 0, totalRetrabalhos = 0, totalBugsProd = 0, somaEscape = 0, somaScore = 0;
+        let statusContagem = { "Em Teste": 0, "Aprovado com Ressalvas": 0, "Aprovado": 0, "Reprovado": 0 };
+        let timelineLabels = [];
+        let timelineScores = [];
+
+        dadosFiltrados.forEach((item, index) => {
+            totalBugsQa += Number(item.bugsQa) || 0;
+            totalRetrabalhos += Number(item.retrabalhoBugs) || 0;
+            totalBugsProd += Number(item.bugsProd) || 0;
+            somaEscape += Number(item.taxaEscape) || 0;
+            somaScore += Number(item.score) || 0;
+            if (statusContagem[item.qaStatus] !== undefined) statusContagem[item.qaStatus]++;
+            if (index >= dadosFiltrados.length - 8) {
+                timelineLabels.push(item.featureName.substring(0, 10) + "...");
+                timelineScores.push(Number(item.score).toFixed(0));
+            }
+        });
+
+        document.getElementById('dashFeatures').innerText = totalFeatures;
+        document.getElementById('dashBugsQa').innerText = totalBugsQa;
+        document.getElementById('dashRetrabalhos').innerText = totalRetrabalhos;
+        document.getElementById('dashBugsProd').innerText = totalBugsProd;
+        document.getElementById('dashEscape').innerText = totalFeatures > 0 ? (somaEscape / totalFeatures).toFixed(1) + "%" : "0%";
+        
+        let medScore = totalFeatures > 0 ? (somaScore / totalFeatures) : 100;
+        document.getElementById('dashScore').innerText = medScore.toFixed(0) + "/100";
+        
+        const cardScore = document.getElementById('cardScoreGeral');
+        if (medScore >= 80) cardScore.style.borderLeftColor = "#198754";
+        else if (medScore >= 50) cardScore.style.borderLeftColor = "#ffc107";
+        else cardScore.style.borderLeftColor = "#dc3545";
+
+        if(myChartStatus) myChartStatus.destroy();
+        if(myChartTimeline) myChartTimeline.destroy();
+
+        const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+        myChartStatus = new Chart(ctxStatus, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(statusContagem),
+                datasets: [{ data: Object.values(statusContagem), backgroundColor: ['#0d6efd', '#ffc107', '#198754', '#dc3545'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        const ctxTimeline = document.getElementById('chartScoreTimeline').getContext('2d');
+        myChartTimeline = new Chart(ctxTimeline, {
+            type: 'line',
+            data: {
+                labels: timelineLabels,
+                datasets: [{ label: 'Score', data: timelineScores, borderColor: '#20c997', backgroundColor: 'rgba(32, 201, 151, 0.1)', fill: true, tension: 0.3 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
+        });
+    }
+
+    function atualizarSelectSquads(dados) {
+        const select = document.getElementById('selectFiltroSquad');
+        let valorSelecionado = select.value;
+        select.innerHTML = '<option value="Todos">Squad: Todas</option>';
+        let squadsUnicas = [...new Set(dados.map(item => item.squad).filter(s => s))];
+        squadsUnicas.forEach(sq => { select.innerHTML += `<option value="${sq}">${sq}</option>`; });
+        select.value = valorSelecionado;
+    }
+
+    function filtrarTabelaECharts() {
+        const busca = document.getElementById('txtBusca').value.toLowerCase().trim();
+        const squadFiltro = document.getElementById('selectFiltroSquad').value;
+        const dataDeStr = document.getElementById('dataFiltroDe').value;
+        const dataAteStr = document.getElementById('dataFiltroAte').value;
+        
+        let limiteDe = dataDeStr ? new Date(dataDeStr + "T00:00:00") : null;
+        let limiteAte = dataAteStr ? new Date(dataAteStr + "T23:59:59") : null;
+
+        let filtrados = window.dadosMetricas.filter(item => {
+            let nomeFeature = String(item.featureName || "").toLowerCase();
+            let codigoTicket = String(item.ticket || "").toLowerCase();
+            let bateBusca = nomeFeature.includes(busca) || codigoTicket.includes(busca);
+            let bateSquad = (squadFiltro === "Todos" || item.squad === squadFiltro);
+            
+            let bateData = true;
+            if (item.dataHora && (limiteDe || limiteAte)) {
+                let partes = item.dataHora.split(" ");
+                let partesData = partes[0].split("/");
+                let dataRegistro = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+                
+                if (limiteDe && dataRegistro < limiteDe) bateData = false;
+                if (limiteAte && dataRegistro > limiteAte) bateData = false;
+            }
+            return bateBusca && bateSquad && bateData;
+        });
+        montarTabela(filtrados);
+        atualizarDashboardECharts(filtrados);
+    }
+
+    function montarTabela(dadosExibir) {
+        const corpo = document.getElementById('tabelaCorpo');
+        corpo.innerHTML = "";
+        if (dadosExibir.length === 0) {
+            corpo.innerHTML = '<tr><td colspan="15" class="text-center text-muted">Nenhum resultado encontrado.</td></tr>';
+            return;
+        }
+
+        dadosExibir.forEach(item => {
+            let nScore = Number(item.score) || 0;
+            let corBadge = "bg-danger";
+            let classeCélulaCheck = "";
+            
+            if(nScore >= 80) { corBadge = "bg-success"; classeCélulaCheck = "table-success"; }
+            else if(nScore >= 50) { corBadge = "bg-warning text-dark"; }
+            else { classeCélulaCheck = "table-danger"; }
+
+            let row = `<tr>
+                <td>${item.dataHora}</td>
+                <td><span class="badge bg-light text-dark border">${item.squad}</span></td>
+                <td>${item.ticket ? `<span class="ticket-badge">${item.ticket}</span>` : '-'}</td>
+                <td class="${classeCélulaCheck}"><strong>${item.featureName}</strong></td>
+                <td>${item.bugsQa}</td>
+                <td>${item.retrabalhoBugs}</td>
+                <td>${item.reopenedBugs}</td>
+                <td><span class="badge bg-secondary">${item.qaStatus}</span></td>
+                <td class="text-danger fw-bold">${item.bugsProd}</td>
+                <td class="fw-bold text-primary">${Number(item.taxaEscape).toFixed(1)}%</td>
+                <td>${item.ttf || '-'}</td>
+                <td><small>${formatarDataExibicao(item.dataDeploy)}</small></td>
+                <td><small>${formatarDataExibicao(item.dataBugProd)}</small></td>
+                <td class="fw-bold text-success">${item.mttf || '-'}</td>
+                <td class="${classeCélulaCheck} text-center"><span class="score-badge ${corBadge}">${nScore.toFixed(0)}</span></td>
+            </tr>`;
+            corpo.innerHTML += row;
+        });
+    }
+
+    function carregarMetricas() {
+        const corpo = document.getElementById('tabelaCorpo');
+        corpo.innerHTML = '<tr><td colspan="15" class="text-center">A atualizar painel...</td></tr>';
+        google.script.run
+            .withSuccessHandler(function(resposta) {
+                if (resposta.status === "sucesso") {
+                    window.dadosMetricas = resposta.dados;
+                    atualizarSelectSquads(resposta.dados);
+                    montarTabela(resposta.dados);
+                    atualizarDashboardECharts(resposta.dados);
+                } else {
+                    corpo.innerHTML = `<tr><td colspan="15" class="text-center text-danger">Erro: ${resposta.mensagem}</td></tr>`;
+                }
+            })
+            .withFailureHandler(function(erro) { corpo.innerHTML = `<tr><td colspan="15" class="text-center text-danger">Erro de rede: ${erro}</td></tr>`; })
+            .obterMetricas();
+    }
+</script>
+
+</body>
+</html>
