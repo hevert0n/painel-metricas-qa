@@ -1,3 +1,4 @@
+![Screenshot do Painel Avançado de QA](painel-screenshot.png)
 # 📊 Painel de Engenharia & Qualidade de QA
 
 Um ecossistema completo de governança e análise de indicadores de testes, construído de forma nativa e integrada ao ecossistema Google Workspace (Google Sheets + Google Apps Script) com interface analítica em Bootstrap 5 e Chart.js.
