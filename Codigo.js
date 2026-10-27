@@ -1,5 +1,5 @@
 // VARIÁVEL GLOBAL DE SEGURANÇA
-var TOKEN_ACESSO_ADMIN = "admin_qa";
+var TOKEN_ACESSO_ADMIN = "heverton.tester";
 
 function doGet(e) {
   var tokenEnviado = e && e.parameter && e.parameter.token;
