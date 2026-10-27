@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,11 @@
         body { background-color: #f4f6f9; padding: 20px; }
         .card { box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; border-radius: 10px; }
         .dash-card { text-align: center; padding: 12px; border-left: 5px solid #6c757d; height: 100%; }
-        .table-container { max-height: 350px; overflow-y: auto; }
-        th { font-size: 0.85rem; white-space: nowrap; }
-        td { font-size: 0.9rem; }
+        .table-container { max-height: 380px; overflow-y: auto; }
+        th { font-size: 0.82rem; white-space: nowrap; cursor: help; text-decoration: underline dotted #adb5bd; }
+        td { font-size: 0.88rem; }
         .score-badge { font-weight: bold; padding: 5px 10px; border-radius: 20px; display: inline-block; min-width: 45px; text-align: center; }
-        .chart-container { position: relative; height: 180px; width: 100%; }
+        .chart-container { position: relative; height: 260px; width: 100%; }
         .ticket-badge { background-color: #e9ecef; color: #495057; font-family: monospace; font-weight: bold; padding: 3px 6px; border-radius: 4px; border: 1px solid #ced4da; }
     </style>
 </head>
@@ -22,49 +22,71 @@
 <div class="container-fluid px-4">
     
     <div class="text-center my-3">
-        <h2>📊 Painel de Engenharia & Qualidade de QA</h2>
-        <p class="text-muted">Acompanhamento preditivo, indicadores consolidados e scores por squad.</p>
+        <h2>📊 Painel de Métricas & Qualidade de QA</h2>
+        <p class="text-muted">Acompanhamento preditivo, indicadores consolidados, cobertura e efetividade de testes.</p>
     </div>
 
     <div class="row g-3 mb-4">
         <div class="col-xl-8 col-lg-7">
             <div class="row g-2 mb-2">
                 <div class="col-4">
-                    <div class="card dash-card bg-white" style="border-left-color: #0d6efd;">
+                    <div class="card dash-card bg-white" style="border-left-color: #0d6efd;" title="Quantidade total de features dentro do escopo filtrado.">
                         <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Features</small>
                         <h4 id="dashFeatures" class="mb-0 text-primary">-</h4>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card dash-card bg-white" style="border-left-color: #198754;">
-                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs QA</small>
+                    <div class="card dash-card bg-white" style="border-left-color: #198754;" title="Quantidade de Bugs encontrados durante a Qualidade.">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs Encontrados</small>
                         <h4 id="dashBugsQa" class="mb-0 text-success">-</h4>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card dash-card bg-white" style="border-left-color: #ffc107;">
+                    <div class="card dash-card bg-white" style="border-left-color: #ffc107;" title="Quantidade de Bugs retestados 2 ou mais vezes durante a Qualidade (falha no desenvolvimento).">
                         <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Retrabalhos</small>
                         <h4 id="dashRetrabalhos" class="mb-0 text-warning">-</h4>
                     </div>
                 </div>
             </div>
-            <div class="row g-2">
+            
+            <div class="row g-2 mb-2">
                 <div class="col-4">
-                    <div class="card dash-card bg-white" style="border-left-color: #dc3545;">
-                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs Prod</small>
+                    <div class="card dash-card bg-white" style="border-left-color: #dc3545;" title="Quantidade de Bugs encontrados após o Deploy (em Produção).">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Bugs em Produção</small>
                         <h4 id="dashBugsProd" class="mb-0 text-danger">-</h4>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card dash-card bg-white" style="border-left-color: #6f42c1;">
+                    <div class="card dash-card bg-white" style="border-left-color: #6f42c1;" title="Percentual médio de bugs que vazaram para produção em relação ao total de falhas mapeadas no ciclo.">
                         <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Escape Médio</small>
                         <h4 id="dashEscape" class="mb-0" style="color: #6f42c1;">-</h4>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card dash-card bg-white" id="cardScoreGeral" style="border-left-color: #20c997;">
+                    <div class="card dash-card bg-white" id="cardScoreGeral" style="border-left-color: #20c997;" title="Média do Score de Qualidade de contenção no período avaliado.">
                         <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Score Médio</small>
                         <h4 id="dashScore" class="mb-0">-</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #0dcaf0;" title="Soma total de Casos de Testes executados no período selecionado.">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Total Casos Executados</small>
+                        <h4 id="dashTotalCasos" class="mb-0 text-info">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #fd7e14;" title="Métrica para saber a quantidade de defeitos identificados em relação ao número de casos de teste executados. Essa métrica auxilia na avaliação da efetividade dos testes realizados.">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Média Efetividade</small>
+                        <h4 id="dashMediaEfetividade" class="mb-0" style="color: #fd7e14;">-</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card dash-card bg-white" style="border-left-color: #6c757d;" title="Quantidade Média de Bugs por Feature. Cálculo: (Soma dos Bugs QA + retrabalho + reaberto) / Soma das features">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size:0.75rem;">Média Bugs por Feature</small>
+                        <h4 id="dashMediaBugs" class="mb-0 text-secondary">-</h4>
                     </div>
                 </div>
             </div>
@@ -87,20 +109,20 @@
     <div class="card p-4 mb-4 bg-white">
         <div class="row g-2 mb-3 align-items-center">
             <div class="col-12 col-xl-3">
-                <h4 class="card-title mb-0">Features Registadas</h4>
+                <h4 class="card-title mb-0">Features Registradas</h4>
             </div>
             <div class="col-12 col-md-4 col-xl-3">
                 <input type="text" id="txtBusca" class="form-control form-control-sm" placeholder="🔍 Buscar por Feature ou Ticket..." onkeyup="filtrarTabelaECharts()">
             </div>
             <div class="col-6 col-md-2 col-xl-2">
                 <select id="selectFiltroSquad" class="form-select form-select-sm" onchange="filtrarTabelaECharts()">
-                    <option value="Todos">Squad: Todas</option>
+                    <option value="Todos">Módulo: Todos</option>
                 </select>
             </div>
             <div class="col-6 col-md-3 col-xl-2 d-flex gap-1 align-items-center">
-                <input type="date" id="dataFiltroDe" class="form-control form-control-sm" title="Data de Início" onchange="filtrarTabelaECharts()">
+                <input type="date" id="dataFiltroDe" class="form-control form-control-sm" title="Data Inicial" onchange="filtrarTabelaECharts()">
                 <small class="text-muted">à</small>
-                <input type="date" id="dataFiltroAte" class="form-control form-control-sm" title="Data Fim" onchange="filtrarTabelaECharts()">
+                <input type="date" id="dataFiltroAte" class="form-control form-control-sm" title="Data Final" onchange="filtrarTabelaECharts()">
             </div>
             <div class="col-12 col-md-3 col-xl-2 text-md-end">
                 <button class="btn btn-sm btn-primary me-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" onclick="mudarParaCriacao()">
@@ -114,27 +136,30 @@
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>Data Registo</th>
-                        <th>Squad</th>
-                        <th>Ticket</th>
-                        <th>Feature</th>
-                        <th>Bugs QA</th>
-                        <th>Retrabalho</th>
-                        <th>Reabertos</th>
-                        <th>Status</th>
-                        <th>Bugs Prod</th>
-                        <th>Taxa Escape</th>
-                        <th>TTF</th>
-                        <th>Data Deploy</th>
-                        <th>Data Bug Prod</th>
-                        <th>MTTF</th>
-                        <th>Score</th>
+                        <th title="Data e hora em que a feature foi documentada no sistema.">Data Registo</th>
+                        <th title="Módulo/Contexto funcional do sistema ao qual esta feature pertence.">Módulo</th>
+                        <th title="Código identificador do card ou ticket de gerenciamento (Ex: JIRA, Azure DevOps).">Ticket</th>
+                        <th title="Nome ou descrição resumida da funcionalidade avaliada.">Feature</th>
+                        <th title="Quantidade de Bugs encontrados durante a Qualidade.">Bugs QA</th>
+                        <th title="Quantidade de Bugs retestados 2 ou mais vezes durante a Qualidade (falha no desenvolvimento).">Retrabalho</th>
+                        <th title="Quantidade de Bugs que foram corrigidos, mas que ocorreu novamente durante a Qualidade.">Reabertos</th>
+                        <th title="Calcula uma média de quantos casos de testes serão necessários ter com base na quantidade de Requisitos Funcionais da Rotina. Fórmula de cálculo: Nº de Requisitos * 3.">Meta Cobertura</th>
+                        <th title="Total de Casos de teste planejados que foram efetivamente rodados pelo analista de QA.">Casos Exec.</th>
+                        <th title="Métrica para saber a quantidade de defeitos identificados em relação ao número de casos de teste executados. Essa métrica auxilia na avaliação da efetividade dos testes realizados. Fórmula de cálculo: Alcance (%) = (Bugs QA / Casos de Teste Executados) × 100. Quanto maior o percentual, maior foi a quantidade de defeitos encontrada durante a execução dos testes. Entretanto, esse valor deve ser analisado em conjunto com a maturidade do produto, pois uma taxa muito alta pode indicar baixa qualidade do software, enquanto uma taxa muito baixa pode indicar um produto mais estável ou uma cobertura insuficiente dos testes.">Efetividade (%)</th>
+                        <th title="Estado atual da homologação da feature.">Status</th>
+                        <th title="Quantidade de Bugs encontrados após o Deploy (em Produção).">Bugs Prod</th>
+                        <th title="Percentual de bugs que vazaram para produção em relação ao total de falhas mapeadas no ciclo. Cálculo: (Bugs Prod / Total Bugs) * 100.">Taxa Escape</th>
+                        <th title="Quantidade de horas usadas na Qualidade.">TTF (horas)</th>
+                        <th title="Data e hora em que o código foi disponibilizado em ambiente de Produção.">Data Deploy</th>
+                        <th title="Data e hora em que a primeira falha pós-deploy foi reportada em Produção.">Data Bug Prod</th>
+                        <th title="Tempo que demorou para o 1º Bug aparecer em Produção.">MTTF</th>
+                        <th title="Indicador de qualidade (0 a 100%) focado na eficiência de contenção do QA. Avalia estritamente o impacto de escapes em produção.">Score</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaCorpo">
                     <tr>
-                        <td colspan="16" class="text-center text-muted">A carregar dados...</td>
+                        <td colspan="19" class="text-center text-muted">A carregar dados...</td>
                     </tr>
                 </tbody>
             </table>
@@ -143,22 +168,38 @@
 
     <div class="collapse" id="collapseForm">
         <div class="card p-4 mb-4 bg-white">
-            <h4 id="formTitulo" class="mb-3 text-primary">Registar Nova Feature</h4>
+            <h4 id="formTitulo" class="mb-3 text-primary">Registrar Nova Feature</h4>
             <form id="qaForm">
                 <input type="hidden" id="idLinha">
 
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="ticket" class="form-label fw-bold text-dark">ID do Ticket / Card</label>
-                        <input type="text" class="form-control" id="ticket" placeholder="Ex: JIRA-123, #402...">
+                        <input type="text" class="form-control" id="ticket" placeholder="Ex: JIRA-123...">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="featureName" class="form-label">Nome da Feature</label>
-                        <input type="text" class="form-control" id="featureName" required placeholder="Ex: Ecrã de Checkout">
+                        <input type="text" class="form-control" id="featureName" required placeholder="Ex: Tela de Checkout">
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="squad" class="form-label">Squad / Contexto</label>
-                        <input type="text" class="form-control" id="squad" placeholder="Ex: Pagamentos, Mobile...">
+                        <label for="squad" class="form-label">Módulo / Contexto</label>
+                        <input type="text" class="form-control" id="squad" placeholder="Ex: Compras, Pagamentos...">
+                    </div>
+                </div>
+
+                <div class="row bg-light p-3 rounded mb-3 border mx-0">
+                    <div class="col-md-4 mb-2">
+                        <label for="requisitos" class="form-label fw-bold text-secondary">Nº de Requisitos Funcionais</label>
+                        <input type="number" class="form-control" id="requisitos" min="0" value="0" onchange="calcularMetaForm()">
+                        <small class="text-muted">Meta estimada de Cobertura: <span id="lblMetaForm" class="fw-bold">0</span> casos</small>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label for="casosExecutados" class="form-label fw-bold text-secondary">Nº de Casos de Teste Executados</label>
+                        <input type="number" class="form-control" id="casosExecutados" min="0" value="0">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label for="casosFalhas" class="form-label fw-bold text-secondary">Nº de Casos de Teste com Falhas</label>
+                        <input type="number" class="form-control" id="casosFalhas" min="0" value="0">
                     </div>
                 </div>
 
@@ -183,8 +224,8 @@
                         <input type="number" class="form-control" id="bugsProd" min="0" value="0">
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="ttf" class="form-label">TTF (Tempo de Qualidade)</label>
-                        <input type="text" class="form-control" id="ttf" placeholder="Ex: 4h, 2 dias...">
+                        <label for="ttf" class="form-label fw-bold text-warning">TTF (Horas Úteis)</label>
+                        <input type="number" class="form-control" id="ttf" min="0" value="0" placeholder="Ex: 8, 16...">
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="dataDeploy" class="form-label text-success fw-bold">Data/Hora do Deploy</label>
@@ -236,6 +277,11 @@
         carregarMetricas();
     };
 
+    function calcularMetaForm() {
+        let reqs = Number(document.getElementById('requisitos').value) || 0;
+        document.getElementById('lblMetaForm').innerText = reqs * 3;
+    }
+
     function formatarDataExibicao(textoIso) {
         if (!textoIso) return "-";
         let partes = textoIso.split("T");
@@ -245,18 +291,33 @@
 
     function atualizarDashboardECharts(dadosFiltrados) {
         let totalFeatures = dadosFiltrados.length;
-        let totalBugsQa = 0, totalRetrabalhos = 0, totalBugsProd = 0, somaEscape = 0, somaScore = 0;
+        let totalBugsQa = 0, totalRetrabalhos = 0, totalReabertos = 0, totalBugsProd = 0;
+        let somaEscape = 0, somaScore = 0;
+        let totalCasosExecutados = 0, somaEfetividade = 0, qtdEfetividadeValidas = 0;
         
         let statusContagem = { "Em Teste": 0, "Aprovado com Ressalvas": 0, "Aprovado": 0, "Reprovado": 0 };
         let timelineLabels = [];
         let timelineScores = [];
 
         dadosFiltrados.forEach((item, index) => {
-            totalBugsQa += Number(item.bugsQa) || 0;
-            totalRetrabalhos += Number(item.retrabalhoBugs) || 0;
+            let bQa = Number(item.bugsQa) || 0;
+            let bRetr = Number(item.retrabalhoBugs) || 0;
+            let bReab = Number(item.reopenedBugs) || 0;
+            let cExec = Number(item.casosExecutados) || 0;
+
+            totalBugsQa += bQa;
+            totalRetrabalhos += bRetr;
+            totalReabertos += bReab;
             totalBugsProd += Number(item.bugsProd) || 0;
             somaEscape += Number(item.taxaEscape) || 0;
             somaScore += Number(item.score) || 0;
+            
+            totalCasosExecutados += cExec;
+
+            if (cExec > 0) {
+                somaEfetividade += (bQa / cExec) * 100;
+                qtdEfetividadeValidas++;
+            }
 
             if (statusContagem[item.qaStatus] !== undefined) statusContagem[item.qaStatus]++;
             
@@ -270,10 +331,16 @@
         document.getElementById('dashBugsQa').innerText = totalBugsQa;
         document.getElementById('dashRetrabalhos').innerText = totalRetrabalhos;
         document.getElementById('dashBugsProd').innerText = totalBugsProd;
-        document.getElementById('dashEscape').innerText = totalFeatures > 0 ? (somaEscape / totalFeatures).toFixed(1) + "%" : "0%";
+        document.getElementById('dashEscape').innerText = totalFeatures > 0 ? (somaEscape / totalFeatures).toFixed(1) + "%" : "0.0%";
         
         let medScore = totalFeatures > 0 ? (somaScore / totalFeatures) : 100;
         document.getElementById('dashScore').innerText = medScore.toFixed(0) + "/100";
+        
+        document.getElementById('dashTotalCasos').innerText = totalCasosExecutados;
+        document.getElementById('dashMediaEfetividade').innerText = qtdEfetividadeValidas > 0 ? (somaEfetividade / qtdEfetividadeValidas).toFixed(1) + "%" : "0.0%";
+        
+        let totalBugsInternos = totalBugsQa + totalRetrabalhos + totalReabertos;
+        document.getElementById('dashMediaBugs').innerText = totalFeatures > 0 ? (totalBugsInternos / totalFeatures).toFixed(1) : "0.0";
         
         const cardScore = document.getElementById('cardScoreGeral');
         if (medScore >= 80) cardScore.style.borderLeftColor = "#198754";
@@ -288,10 +355,7 @@
             type: 'doughnut',
             data: {
                 labels: Object.keys(statusContagem),
-                datasets: [{
-                    data: Object.values(statusContagem),
-                    backgroundColor: ['#0d6efd', '#ffc107', '#198754', '#dc3545']
-                }]
+                datasets: [{ data: Object.values(statusContagem), backgroundColor: ['#0d6efd', '#ffc107', '#198754', '#dc3545'] }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
@@ -301,28 +365,16 @@
             type: 'line',
             data: {
                 labels: timelineLabels,
-                datasets: [{
-                    label: 'Score',
-                    data: timelineScores,
-                    borderColor: '#20c997',
-                    backgroundColor: 'rgba(32, 201, 151, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
+                datasets: [{ label: 'Score', data: timelineScores, borderColor: '#20c997', backgroundColor: 'rgba(32, 201, 151, 0.1)', fill: true, tension: 0.3 }],
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
-                scales: { y: { min: 0, max: 100 } }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
         });
     }
 
     function atualizarSelectSquads(dados) {
         const select = document.getElementById('selectFiltroSquad');
         let valorSelecionado = select.value;
-        select.innerHTML = '<option value="Todos">Squad: Todas</option>';
+        select.innerHTML = '<option value="Todos">Módulo: Todos</option>';
         
         let squadsUnicas = [...new Set(dados.map(item => item.squad).filter(s => s))];
         squadsUnicas.forEach(sq => {
@@ -331,12 +383,11 @@
         select.value = valorSelecionado;
     }
 
-    // NOVA INTELIGÊNCIA DE FILTRO DE DATA INCLUÍDA AQUI
     function filtrarTabelaECharts() {
         const busca = document.getElementById('txtBusca').value.toLowerCase().trim();
         const squadFiltro = document.getElementById('selectFiltroSquad').value;
-        const dataDeStr = document.getElementById('dataFiltroDe').value; // Formato YYYY-MM-DD
-        const dataAteStr = document.getElementById('dataFiltroAte').value; // Formato YYYY-MM-DD
+        const dataDeStr = document.getElementById('dataFiltroDe').value;
+        const dataAteStr = document.getElementById('dataFiltroAte').value;
         
         let limiteDe = dataDeStr ? new Date(dataDeStr + "T00:00:00") : null;
         let limiteAte = dataAteStr ? new Date(dataAteStr + "T23:59:59") : null;
@@ -348,10 +399,8 @@
             let bateBusca = nomeFeature.includes(busca) || codigoTicket.includes(busca);
             let bateSquad = (squadFiltro === "Todos" || item.squad === squadFiltro);
             
-            // Filtro por período de data de registro
             let bateData = true;
             if (item.dataHora && (limiteDe || limiteAte)) {
-                // Converte "DD/MM/YYYY HH:MM" para um objeto Date legível
                 let partes = item.dataHora.split(" ");
                 let partesData = partes[0].split("/");
                 let dataRegistro = new Date(partesData[2], partesData[1] - 1, partesData[0]);
@@ -372,7 +421,7 @@
         corpo.innerHTML = "";
         
         if (dadosExibir.length === 0) {
-            corpo.innerHTML = '<tr><td colspan="16" class="text-center text-muted">Nenhum resultado encontrado.</td></tr>';
+            corpo.innerHTML = '<tr><td colspan="19" class="text-center text-muted">Nenhum resultado encontrado.</td></tr>';
             return;
         }
 
@@ -385,6 +434,13 @@
             else if(nScore >= 50) { corBadge = "bg-warning text-dark"; }
             else { classeCélulaCheck = "table-danger"; }
 
+            let bQa = Number(item.bugsQa) || 0;
+            let reqs = Number(item.requisitos) || 0;
+            let cExec = Number(item.casosExecutados) || 0;
+            
+            let metaCobertura = reqs * 3;
+            let efetividade = cExec > 0 ? ((bQa / cExec) * 100).toFixed(1) + "%" : "0.0%";
+
             let row = `<tr>
                 <td>${item.dataHora}</td>
                 <td><span class="badge bg-light text-dark border">${item.squad}</span></td>
@@ -393,25 +449,39 @@
                 <td>${item.bugsQa}</td>
                 <td>${item.retrabalhoBugs}</td>
                 <td>${item.reopenedBugs}</td>
+                <td class="text-center fw-bold text-secondary">${metaCobertura}</td>
+                <td class="text-center">${cExec}</td>
+                <td class="text-center fw-bold text-info">${efetividade}</td>
                 <td><span class="badge bg-secondary">${item.qaStatus}</span></td>
                 <td class="text-danger fw-bold">${item.bugsProd}</td>
                 <td class="fw-bold text-primary">${Number(item.taxaEscape).toFixed(1)}%</td>
-                <td>${item.ttf || '-'}</td>
+                <td class="text-center fw-bold">${item.ttf || '0'}h</td>
                 <td><small>${formatarDataExibicao(item.dataDeploy)}</small></td>
                 <td><small>${formatarDataExibicao(item.dataBugProd)}</small></td>
                 <td class="fw-bold text-success">${item.mttf || '-'}</td>
                 <td class="${classeCélulaCheck} text-center"><span class="score-badge ${corBadge}">${nScore.toFixed(0)}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-warning" onclick="prepararEdicao(${item.idLinha})">Editar</button>
+                    <button class="btn btn-sm btn-warning w-100 mb-1" onclick="prepararEdicao(${item.idLinha})">Editar</button>
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="exportarPDF(${item.idLinha})">📄 Exportar</button>
                 </td>
             </tr>`;
             corpo.innerHTML += row;
         });
     }
 
+    function exportarPDF(idLinha) {
+        var janela = window.open("");
+        google.script.run
+            .withSuccessHandler(function(htmlConteudo) {
+                janela.document.write(htmlConteudo);
+                janela.document.close();
+            })
+            .gerarPaginaImpressao(idLinha);
+    }
+
     function carregarMetricas() {
         const corpo = document.getElementById('tabelaCorpo');
-        corpo.innerHTML = '<tr><td colspan="16" class="text-center">A atualizar painel...</td></tr>';
+        corpo.innerHTML = '<tr><td colspan="19" class="text-center">A atualizar painel...</td></tr>';
 
         google.script.run
             .withSuccessHandler(function(resposta) {
@@ -421,12 +491,10 @@
                     montarTabela(resposta.dados);
                     atualizarDashboardECharts(resposta.dados);
                 } else {
-                    corpo.innerHTML = `<tr><td colspan="16" class="text-center text-danger">Erro: ${resposta.mensagem}</td></tr>`;
+                    corpo.innerHTML = `<tr><td colspan="19" class="text-center text-danger">Erro: ${resposta.mensagem}</td></tr>`;
                 }
             })
-            .withFailureHandler(function(erro) {
-                corpo.innerHTML = `<tr><td colspan="16" class="text-center text-danger">Erro de rede: ${erro}</td></tr>`;
-            })
+            .withFailureHandler(function(erro) { corpo.innerHTML = `<tr><td colspan="19" class="text-center text-danger">Erro de rede: ${erro}</td></tr>`; })
             .obterMetricas();
     }
 
@@ -447,10 +515,15 @@
             document.getElementById('reopenedBugs').value = item.reopenedBugs;
             document.getElementById('qaStatus').value = item.qaStatus;
             document.getElementById('bugsProd').value = item.bugsProd;
-            document.getElementById('ttf').value = item.ttf;
+            document.getElementById('ttf').value = item.ttf || 0;
             document.getElementById('dataBugProd').value = item.dataBugProd;
             document.getElementById('dataDeploy').value = item.dataDeploy;
             document.getElementById('notes').value = item.notes;
+            
+            document.getElementById('requisitos').value = item.requisitos || 0;
+            document.getElementById('casosExecutados').value = item.casosExecutados || 0;
+            document.getElementById('casosFalhas').value = item.casosFalhas || 0;
+            calcularMetaForm();
 
             document.getElementById('formTitulo').innerText = "✏️ Editar Feature: " + item.featureName;
             document.getElementById('btnSalvar').className = "btn btn-success flex-grow-1";
@@ -469,7 +542,8 @@
     function limparFormulario() {
         document.getElementById('qaForm').reset();
         document.getElementById('idLinha').value = "";
-        document.getElementById('formTitulo').innerText = "Registar Nova Feature";
+        document.getElementById('lblMetaForm').innerText = "0";
+        document.getElementById('formTitulo').innerText = "Registrar Nova Feature";
         document.getElementById('btnSalvar').className = "btn btn-primary flex-grow-1";
         document.getElementById('btnSalvar').innerText = "Guardar Métricas";
     }
@@ -491,7 +565,10 @@
             ttf: document.getElementById('ttf').value,
             dataBugProd: document.getElementById('dataBugProd').value,
             dataDeploy: document.getElementById('dataDeploy').value,
-            notes: document.getElementById('notes').value
+            notes: document.getElementById('notes').value,
+            requisitos: document.getElementById('requisitos').value,
+            casosExecutados: document.getElementById('casosExecutados').value,
+            casosFalhas: document.getElementById('casosFalhas').value
         };
 
         if (!dadosFormulario.featureName) {
